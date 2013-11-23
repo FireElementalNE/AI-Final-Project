@@ -18,7 +18,7 @@ backRowPossibilities = ['DEW','DEC','DEA']
 commandPossibilities = ['Attack', 'Exit']
 
 def endofLine():
-    os.write(0,'\n')
+    sys.stdout.write('\n')
 
 def clearScreen():
     command = ''
@@ -84,13 +84,13 @@ print backRow
 
 #clearScreen()
 
-os.write(0,'Starting Game!')
+sys.stdout.write('Starting Game!')
 #time.sleep(1)
-os.write(0,'.')
+sys.stdout.write('.')
 #time.sleep(1)
-os.write(0,'.')
+sys.stdout.write('.')
 #time.sleep(1)
-os.write(0,'.')
+sys.stdout.write('.')
 endofLine()
 command = ''
 allEnemies = frontRow + backRow
@@ -98,11 +98,11 @@ allEnemies = frontRow + backRow
 while command.lower() not in exitStrings:
     print '-------------FRONT ROW--------------'
     for x in frontRow:
-        os.write(0,'ID: ' + str(x.enemyId) + ' Type:' + str(x.enemyType) + ' HP:' + str(x.hitPoints) + '\n')
+        sys.stdout.write('ID: ' + str(x.enemyId) + ' Type:' + str(x.enemyType) + ' HP:' + str(x.hitPoints) + '\n')
     endofLine()
     print '-------------BACK ROW---------------'
     for x in backRow: 
-        os.write(0,'ID: ' + str(x.enemyId) + ' Type:' + str(x.enemyType) + ' HP:' + str(x.hitPoints) + '\n')
+        sys.stdout.write('ID: ' + str(x.enemyId) + ' Type:' + str(x.enemyType) + ' HP:' + str(x.hitPoints) + '\n')
 
     print 'Commands!'
     for i in range(len(commandPossibilities)):
