@@ -26,7 +26,7 @@ class Enemies:
             self.enemyId = ID
             self.hitPoints = 70
             self.attack = 45
-            self.defence = 40
+            self.defence = 60
             self.dodge = 15
             self.hit = 65
             self.doubleSwing = 5
@@ -56,7 +56,7 @@ class Enemies:
             self.enemyId = ID
             self.hitPoints = 110
             self.attack = 15
-            self.defence = 60
+            self.defence = 50
             self.dodge = 30
             self.hit = 80
             self.doubleSwing = 30

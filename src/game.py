@@ -1,4 +1,4 @@
-import sys,os,random,time
+import sys,os,random,time,functions
 from config import *
 from player import Player
 from enemies import Enemies
@@ -120,14 +120,23 @@ while command.lower() not in exitStrings:
         for x in allEnemies:
             print '[' + str(x.enemyId) + '] ' + x.enemyType
         try:
-            enemyToAttack = int(raw_input('>'))
-            if enemyToAttack >= len(allEnemies) or enemyToAttack < 0:
+            enemyToAttackIndex = int(raw_input('>'))
+            if enemyToAttackIndex >= len(allEnemies) or enemyToAttackIndex < 0:
                 raise ValueError
         except ValueError:
             tryAgain()
             continue
-        enemyToAttack = allEnemies[enemyToAttack]
-        
-    
-    command = 'e'
+        enemyToAttack = allEnemies[enemyToAttackIndex]
+        dmgAndEnemey = functions.Attack(thePlayer,enemyToAttack)
+        enemyAfterAttack = dmgAndEnemey[0]
+        dmgDone = dmgAndEnemey[1]
+        print 'You attacked ' + enemyAfterAttack.enemyType + ' and dealt ' + str(dmgDone) + '!'
+        allEnemies[enemyToAttackIndex] = enemyAfterAttack
+        if enemyToAttack.row == 1:
+            frontRow = functions.changeRow(frontRow,enemyAfterAttack)
+        else:
+            backRow = functions.changeRow(backRow,enemyAfterAttack)
+
+
+    #command = 'e'
 
