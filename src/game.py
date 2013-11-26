@@ -93,9 +93,16 @@ sys.stdout.write('.')
 sys.stdout.write('.')
 endofLine()
 command = ''
-allEnemies = frontRow + backRow
+
 
 while command.lower() not in exitStrings:
+    allEnemies = frontRow + backRow
+    thePlayer.currentDefence = thePlayer.defence
+    for x in frontRow:
+        x.currentDefence = x.defence
+    for x in backRow:      
+        x.currentDefence = x.defence
+    frontRow[0] = functions.Defend(frontRow[0])
     print '-------------FRONT ROW--------------'
     for x in frontRow:
         sys.stdout.write('ID: ' + str(x.enemyId) + ' Type:' + str(x.enemyType) + ' HP:' + str(x.hitPoints) + '\n')

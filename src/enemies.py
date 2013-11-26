@@ -10,6 +10,7 @@ class Enemies:
     doubleSwing = 0
     state = None
     row = None
+    currentDefence = 0
     def __init__(self, EnemyType,ID):
         if EnemyType == 'HOF':
             self.enemyType = 'Heavy Orc Fighter'
@@ -21,6 +22,7 @@ class Enemies:
             self.hit = 60
             self.doubleSwing = 15
             self.row = 1
+            self.currentDefence = self.defence
         elif EnemyType == 'LOF':
             self.enemyType = 'Light Orc Figher'
             self.enemyId = ID
@@ -31,6 +33,7 @@ class Enemies:
             self.hit = 65
             self.doubleSwing = 5
             self.row = 1
+            self.currentDefence = self.defence
         elif EnemyType == 'DEW':
             self.enemyType = 'Dark Elf Wizard'
             self.enemyId = ID
@@ -41,6 +44,7 @@ class Enemies:
             self.hit = 65
             self.doubleSwing = 5
             self.row = 2
+            self.currentDefence = self.defence
         elif EnemyType == 'DEC':
             self.enemyType = 'Dark Elf Cleric'
             self.enemyId = ID
@@ -51,6 +55,7 @@ class Enemies:
             self.hit = 65
             self.doublewing = 5
             self.row = 2
+            self.currentDefence = self.defence
         elif EnemyType == 'DEA':
             self.enemyType = 'Dark Elf Archer'
             self.enemyId = ID
@@ -61,6 +66,7 @@ class Enemies:
             self.hit = 80
             self.doubleSwing = 30
             self.row = 2
+            self.currentDefence = self.defence
     def printInfo(self):
         print 'ID         = ' + str(self.enemyId)
         print 'Name       = ' + self.enemyType

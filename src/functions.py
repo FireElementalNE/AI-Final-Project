@@ -16,9 +16,15 @@ def Attack(attacker,defender):
 	#print '==================' + str(upperBound) + ' ' + str(lowerBound)
 	baseDamage = random.randint(lowerBound,upperBound)
 	#print '==================' + str(baseDamage)
-	armorReduction = (((150 - defender.defence) / 100.0) * 0.7)
+	print defender.currentDefence
+	armorReduction = (((150 - defender.currentDefence) / 100.0) * 0.7)
 	#print '==================' + str(armorReduction)
 	trueDamage = int(baseDamage * armorReduction)
 	#print '==================' + str(trueDamage)
 	defender.hitPoints = defender.hitPoints - trueDamage
 	return [defender,trueDamage]
+
+def Defend(el):
+	el.currentDefence = el.currentDefence * 1.5
+	return el
+
