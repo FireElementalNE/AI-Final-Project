@@ -1,4 +1,5 @@
-import sys,os,random,time,functions
+import sys,time,functions,getpass
+from random import randint
 from config import *
 from player import Player
 from enemies import Enemies
@@ -15,24 +16,11 @@ playerClasses = ['Fighter', 'Wizard', 'Thief']
 enemyClasses = ['HOF','LOF','DEW','DEC','DEA']
 frontRowPossibilities = ['HOF','LOF']
 backRowPossibilities = ['DEW','DEC','DEA']
-commandPossibilities = ['Attack', 'Exit']
+commandPossibilities = ['Attack','Defend', 'Exit']
 
-def endofLine():
-    sys.stdout.write('\n')
 
-def clearScreen():
-    command = ''
-    if myOS == 'Windows':
-        command = 'cls'
-    else:
-        command = 'clear'
-    os.system(command)
 
-def tryAgain():
-    clearScreen()
-    print 'please try again'
-
-clearScreen()
+functions.clearScreen()
 print 'Welcome to AI Battle!'
 print '------------------------------------------'
 print 'Please pick your player class! (pick number NOT name)'
@@ -63,26 +51,22 @@ while True:
 
 frontRowCount = (enemyCount / 2) + 1
 backRowCount = enemyCount - frontRowCount
-
-print 'FRONT ROW COUNT: ' + str(frontRowCount) + ' BACK ROW COUNT: ' + str(backRowCount)
+functions.endofLine()
+#print 'FRONT ROW COUNT: ' + str(frontRowCount) + ' BACK ROW COUNT: ' + str(backRowCount)
 
 print 'Picking Enemies!'
-
+functions.endofLine()
 frontRow = []
 backRow = []
 
 for i in range(frontRowCount):
-    tempEnemyIndex = random.randint(0,len(frontRowPossibilities)-1)
+    tempEnemyIndex = randint(0,len(frontRowPossibilities)-1)
     frontRow.append(Enemies(frontRowPossibilities[tempEnemyIndex],i))
 for i in range(backRowCount):
-    tempEnemyIndex = random.randint(0,len(backRowPossibilities)-1)
+    tempEnemyIndex = randint(0,len(backRowPossibilities)-1)
     backRow.append(Enemies(backRowPossibilities[tempEnemyIndex],i+len(frontRow)))
 
-print frontRow
-print backRow
 
-
-#clearScreen()
 
 sys.stdout.write('Starting Game!')
 #time.sleep(1)
@@ -91,26 +75,18 @@ sys.stdout.write('.')
 sys.stdout.write('.')
 #time.sleep(1)
 sys.stdout.write('.')
-endofLine()
+functions.endofLine()
+functions.endofLine()
 command = ''
 
-
 while command.lower() not in exitStrings:
+    wait = getpass.getpass('press enter key to continue...')
     allEnemies = frontRow + backRow
-    thePlayer.currentDefence = thePlayer.defence
-    for x in frontRow:
-        x.currentDefence = x.defence
-    for x in backRow:      
-        x.currentDefence = x.defence
-    frontRow[0] = functions.Defend(frontRow[0])
-    print '-------------FRONT ROW--------------'
-    for x in frontRow:
-        sys.stdout.write('ID: ' + str(x.enemyId) + ' Type:' + str(x.enemyType) + ' HP:' + str(x.hitPoints) + '\n')
-    endofLine()
-    print '-------------BACK ROW---------------'
-    for x in backRow: 
-        sys.stdout.write('ID: ' + str(x.enemyId) + ' Type:' + str(x.enemyType) + ' HP:' + str(x.hitPoints) + '\n')
-
+    frontRow,backRow,thePlayer = functions.reset(frontRow,backRow,thePlayer)
+    functions.printEnemies(frontRow,backRow)
+    functions.endofLine()
+    thePlayer.printInfoLine()
+    functions.endofLine()
     print 'Commands!'
     for i in range(len(commandPossibilities)):
         print '[' + str(i) + '] ' + commandPossibilities[i]
@@ -119,8 +95,9 @@ while command.lower() not in exitStrings:
         if command >= len(commandPossibilities) or command < 0:
             raise ValueError
     except ValueError:
-        tryAgain()
+        functions.tryAgain()
         continue
+    functions.clearScreen()
     command = commandPossibilities[command]
     if  command == 'Attack':
         print 'Attack Who?'
@@ -131,19 +108,20 @@ while command.lower() not in exitStrings:
             if enemyToAttackIndex >= len(allEnemies) or enemyToAttackIndex < 0:
                 raise ValueError
         except ValueError:
-            tryAgain()
+            functions.tryAgain()
             continue
         enemyToAttack = allEnemies[enemyToAttackIndex]
-        dmgAndEnemey = functions.Attack(thePlayer,enemyToAttack)
-        enemyAfterAttack = dmgAndEnemey[0]
-        dmgDone = dmgAndEnemey[1]
-        print 'You attacked ' + enemyAfterAttack.enemyType + ' and dealt ' + str(dmgDone) + '!'
-        allEnemies[enemyToAttackIndex] = enemyAfterAttack
-        if enemyToAttack.row == 1:
-            frontRow = functions.changeRow(frontRow,enemyAfterAttack)
-        else:
-            backRow = functions.changeRow(backRow,enemyAfterAttack)
-
+        thePlayer,frontRow,backRow = functions.Attack(thePlayer,enemyToAttack,frontRow,backRow,True)
+    if command == 'Defend':
+        thePlayer = functions.Defend(thePlayer)
+        print 'You are Defending!'
+        print 'current Stats:'
+        thePlayer.printInfo('--> ')
+    functions.endofLine()
+    print 'Enemy Turn!'
+    functions.endofLine()
+    thePlayer,frontRow,backRow = functions.enemyTurn(thePlayer,frontRow,backRow)
+    functions.endofLine()
 
     #command = 'e'
 
