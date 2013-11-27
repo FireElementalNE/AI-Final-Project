@@ -13,6 +13,7 @@ class Enemies:
     row = None
     currentDefence = 0
     currentHP = 0
+    status = 'Nothing'
     def __init__(self, EnemyType,ID):
         if EnemyType == 'HOF':
             self.enemyType = 'Heavy Orc Fighter'
@@ -87,5 +88,5 @@ class Enemies:
         print 'C Defence  = ' + str(self.currentDefence)
         print 'C HP       = ' + str(self.currentHP)
     def printInfoLine(self):
-         stdout.write('ID: ' + str(self.enemyId) + ' Type:' + str(self.enemyType) + ' HP:' + str(self.currentHP) + '\n')
+         stdout.write('ID: ' + str(self.enemyId) + ' Type:' + str(self.enemyType) + ' HP:' + str(self.currentHP) + ' STATUS: ' + self.status + '\n')
 

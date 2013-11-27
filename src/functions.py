@@ -20,6 +20,28 @@ def tryAgain():
     clearScreen()
     print 'please try again'
 
+def updateEnemey(enemy,row):
+	for i in range(len(row)):
+		if row[i] == enemy.enemyId:
+			row[i] == enemy
+	return row
+
+def validId(frontRow,backRow,mId):
+	for x in frontRow:
+		if x.enemyId == mId:
+			return True
+	for x in backRow:
+		if x.enemyId == mId:
+			return True
+	return False
+
+def getEnemey(frontRow,backRow,mId):
+	for x in frontRow:
+		if x.enemyId == mId:
+			return x
+	for x in backRow:
+		if x.enemyId == mId:
+			return x
 
 def printEnemies(frontRow,backRow):
 	print '-------------FRONT ROW--------------'
@@ -30,14 +52,22 @@ def printEnemies(frontRow,backRow):
 	for x in backRow: 
 		x.printInfoLine()
 
-def reset(frontRow,backRow,thePlayer):
-	thePlayer.currentDefence = thePlayer.defence
+def resetEnemies(frontRow,backRow):
 	for x in frontRow:
 		x.currentDefence = x.defence
+		#x.status = 'Nothing'
 	for x in backRow:      
 		x.currentDefence = x.defence
-	return [frontRow,backRow,thePlayer]
+		#x.status = 'Nothing'
+	return [frontRow,backRow]
 
+def resetPlayer(thePlayer):
+	thePlayer.currentDefence = thePlayer.defence
+	return thePlayer
+
+
+def removeDeadEnemeies(row):
+	return filter(lambda x: x.currentHP > 0, row)
 
 def changeRow(row,enemy):
 	for i in range(len(row)):
@@ -102,20 +132,46 @@ def Attack(attacker,defender,frontRow,backRow,playerAttack):
 				print attacker.enemyType + ' Attacked you for ' + str(dmgDone) + ' damage!'
 		return [playerAfterAttack,frontRow,backRow]
 
-def Defend(el):
-	el.currentDefence = el.currentDefence * 1.5
-	if el.currentHP >= (el.hitPoints * 0.9):
+def Defend(el,playerDefend):
+	printString = ''
+	healAmount = 0
+	defenceBonus = 0
+	healingBonus = 0
+	if playerDefend:
+		printString = 'You'
+		defenceBonus = 1.5
+		healingBonus = 0.1
+	else:
+		printString = el.enemyType
+		defenceBonus = 1.2
+		healingBonus = 0.06
+	el.currentDefence = el.currentDefence * defenceBonus
+	if el.currentHP >= (el.hitPoints * 1 - healingBonus):
+		healAmount = el.hitPoints - el.currentHP
 		el.currentHP = el.hitPoints
 	else:
-		el.currentHP = el.currentHP + int(el.hitPoints * 0.1)
+		healAmount = int(el.hitPoints * healingBonus)
+		el.currentHP = el.currentHP + int(el.hitPoints * healingBonus)
+
+	print printString + ' Defended! New Armor: ' + str(el.currentDefence * defenceBonus) + '! Healed for ' + str(healAmount) + '!'
 	return el
 
 def enemyTurn(thePlayer,frontRow,backRow):
 	for x in frontRow:
 		frontRowTree = trees.OrcFighterTree(x,thePlayer)
 		mAction = frontRowTree.action
+		print x.enemyType + ' ' + mAction
+		#print x.printInfo()
 		if mAction == 'Attack':
 			thePlayer,frontRow,backRow = Attack(x,thePlayer,frontRow,backRow,False)
+			x.status = 'Attacking'
+			frontRow = updateEnemey(x,frontRow)
+		elif mAction == 'Defend':
+			x.status = 'Defending'
+			x = Defend(x,False)
+			frontRow = updateEnemey(x,frontRow)
+
+	print '==================' + frontRow[0].status
 	return [thePlayer,frontRow,backRow]	
 
 

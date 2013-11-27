@@ -81,8 +81,7 @@ command = ''
 
 while command.lower() not in exitStrings:
     wait = getpass.getpass('press enter key to continue...')
-    allEnemies = frontRow + backRow
-    frontRow,backRow,thePlayer = functions.reset(frontRow,backRow,thePlayer)
+    thePlayer = functions.resetPlayer(thePlayer)
     functions.printEnemies(frontRow,backRow)
     functions.endofLine()
     thePlayer.printInfoLine()
@@ -101,22 +100,25 @@ while command.lower() not in exitStrings:
     command = commandPossibilities[command]
     if  command == 'Attack':
         print 'Attack Who?'
-        for x in allEnemies:
+        for x in frontRow+backRow:
             print '[' + str(x.enemyId) + '] ' + x.enemyType
         try:
-            enemyToAttackIndex = int(raw_input('>'))
-            if enemyToAttackIndex >= len(allEnemies) or enemyToAttackIndex < 0:
+            enemyToAttackID = int(raw_input('>'))
+            if not functions.validId(frontRow,backRow,enemyToAttackID):
                 raise ValueError
         except ValueError:
             functions.tryAgain()
             continue
-        enemyToAttack = allEnemies[enemyToAttackIndex]
+        enemyToAttack = functions.getEnemey(frontRow,backRow,enemyToAttackID)
         thePlayer,frontRow,backRow = functions.Attack(thePlayer,enemyToAttack,frontRow,backRow,True)
     if command == 'Defend':
-        thePlayer = functions.Defend(thePlayer)
+        thePlayer = functions.Defend(thePlayer,True)
         print 'You are Defending!'
         print 'current Stats:'
         thePlayer.printInfo('--> ')
+    frontRow,backRow = functions.resetEnemies(frontRow,backRow)
+    frontRow = functions.removeDeadEnemeies(frontRow)
+    backRow = functions.removeDeadEnemeies(backRow)
     functions.endofLine()
     print 'Enemy Turn!'
     functions.endofLine()

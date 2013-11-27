@@ -13,7 +13,7 @@ class Player:
         self.name = CharacterType
         if CharacterType == 'Fighter':
             self.hitPoints = 710
-            self.attack = 70
+            self.attack = 85
             self.defence = 80
             self.dodge = 5
             self.hit = 60
@@ -22,7 +22,7 @@ class Player:
             self.currentHP = self.hitPoints
         elif CharacterType == 'Wizard':
             self.hitPoints = 370
-            self.attack = 100
+            self.attack = 120
             self.defence = 40
             self.dodge = 15
             self.hit = 65
@@ -31,11 +31,11 @@ class Player:
             self.currentHP = self.hitPoints
         elif CharacterType == 'Thief':
             self.hitPoints = 500
-            self.attack = 45
+            self.attack = 55
             self.defence = 60
             self.dodge = 30
             self.hit = 80
-            self.doubleSwing = 30
+            self.doubleSwing = 40
             self.currentDefence = self.defence
             self.currentHP = self.hitPoints
     def printInfo(self,indent=''):
