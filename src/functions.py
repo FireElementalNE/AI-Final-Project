@@ -160,7 +160,6 @@ def enemyTurn(thePlayer,frontRow,backRow):
 	for x in frontRow:
 		frontRowTree = trees.OrcFighterTree(x,thePlayer)
 		mAction = frontRowTree.action
-		print x.enemyType + ' ' + mAction
 		#print x.printInfo()
 		if mAction == 'Attack':
 			thePlayer,frontRow,backRow = Attack(x,thePlayer,frontRow,backRow,False)
