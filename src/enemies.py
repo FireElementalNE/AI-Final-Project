@@ -14,12 +14,14 @@ class Enemies:
     currentDefence = 0
     currentHP = 0
     status = 'Nothing'
+    magicPoints = 0
+    currentMP = 0
     def __init__(self, EnemyType,ID):
         if EnemyType == 'HOF':
             self.enemyType = 'Heavy Orc Fighter'
             self.enemyId = ID
-            self.hitPoints = 400
-            self.attack = 25
+            self.hitPoints = 300
+            self.attack = 20
             self.defence = 80
             self.dodge = 5
             self.hit = 60
@@ -30,8 +32,8 @@ class Enemies:
         elif EnemyType == 'LOF':
             self.enemyType = 'Light Orc Figher'
             self.enemyId = ID
-            self.hitPoints = 270
-            self.attack = 35
+            self.hitPoints = 190
+            self.attack = 27
             self.defence = 60
             self.dodge = 15
             self.hit = 65
@@ -42,20 +44,22 @@ class Enemies:
         elif EnemyType == 'DEW':
             self.enemyType = 'Dark Elf Wizard'
             self.enemyId = ID
-            self.hitPoints = 180
+            self.hitPoints = 140
             self.attack = 45
             self.defence = 40
             self.dodge = 15
             self.hit = 65
-            self.doubleSwing = 5
+            self.doubleSwing = 1
             self.row = 2
             self.currentDefence = self.defence
             self.currentHP = self.hitPoints
+            self.magicPoints = 100
+            self.currentMP = self.magicPoints
         elif EnemyType == 'DEC':
             self.enemyType = 'Dark Elf Cleric'
             self.enemyId = ID
-            self.hitPoints = 180
-            self.attack = 45
+            self.hitPoints = 140
+            self.attack = 15
             self.defence = 40
             self.dodge = 15
             self.hit = 65
@@ -63,15 +67,17 @@ class Enemies:
             self.row = 2
             self.currentDefence = self.defence
             self.currentHP = self.hitPoints
+            self.magicPoints = 100
+            self.currentMP = self.magicPoints
         elif EnemyType == 'DEA':
             self.enemyType = 'Dark Elf Archer'
             self.enemyId = ID
-            self.hitPoints = 220
-            self.attack = 15
+            self.hitPoints = 170
+            self.attack = 17
             self.defence = 50
             self.dodge = 30
             self.hit = 80
-            self.doubleSwing = 30
+            self.doubleSwing = 20
             self.row = 2
             self.currentDefence = self.defence
             self.currentHP = self.hitPoints
@@ -88,5 +94,5 @@ class Enemies:
         print 'C Defence  = ' + str(self.currentDefence)
         print 'C HP       = ' + str(self.currentHP)
     def printInfoLine(self):
-         stdout.write('ID: ' + str(self.enemyId) + ' Type:' + str(self.enemyType) + ' HP:' + str(self.currentHP) + ' STATUS: ' + self.status + '\n')
+         stdout.write('ID: ' + str(self.enemyId) + ' Type:' + str(self.enemyType) + ' HP:' + str(self.currentHP) + ' STATUS: ' + self.status + ' MP: ' + str(self.currentMP) + '\n')
 

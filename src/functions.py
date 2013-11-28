@@ -58,6 +58,11 @@ def resetEnemies(frontRow,backRow):
 		#x.status = 'Nothing'
 	for x in backRow:      
 		x.currentDefence = x.defence
+		if x.enemyType == 'Dark Elf Cleric':
+			if x.magicPoints - x.currentMP < MPTURN:
+				x.currentMP = x.magicPoints
+			else:
+				x.currentMP = x.currentMP + MPTURN
 		#x.status = 'Nothing'
 	return [frontRow,backRow]
 
@@ -156,6 +161,18 @@ def Defend(el,playerDefend):
 	print printString + ' Defended! New Armor: ' + str(el.currentDefence * defenceBonus) + '! Healed for ' + str(healAmount) + '!'
 	return el
 
+def Heal(source,target):
+	actualHeal = 0
+	if target.hitPoints - target.currentHP < int(target.hitPoints * HEALAMOUNT):
+		actualHeal = target.hitPoints - target.currentHP
+		target.currentHP = target.hitPoints
+	else:
+		target.currentHP = target.currentHP + int(target.hitPoints * HEALAMOUNT)
+		actualHeal = int(target.hitPoints * HEALAMOUNT)
+	print source.enemyType + ' Healed ' + target.enemyType + ' for ' + str(actualHeal)
+	source.currentMP = source.currentMP - HEALCOST
+	return [source,target]
+
 def enemyTurn(thePlayer,frontRow,backRow):
 	for x in frontRow:
 		frontRowTree = trees.OrcFighterTree(x,thePlayer)
@@ -169,8 +186,42 @@ def enemyTurn(thePlayer,frontRow,backRow):
 			x.status = 'Defending'
 			x = Defend(x,False)
 			frontRow = updateEnemey(x,frontRow)
+	for x in backRow:
+		backRowTree = None
+		if x.enemyType == 'Dark Elf Archer':
+			backRowTree = trees.ArcherTree(x,thePlayer)
+			mAction = backRowTree.action
+			if mAction == 'Attack':
+				thePlayer,frontRow,backRow = Attack(x,thePlayer,frontRow,backRow,False)
+				x.status = 'Attacking'
+				backRow = updateEnemey(x,backRow)
+			elif mAction == 'Defend':
+				x.status = 'Defending'
+				x = Defend(x,False)
+				backRow = updateEnemey(x,backRow)
+		elif x.enemyType == 'Dark Elf Cleric':
+			backRowTree = trees.ClericTree(x,frontRow,backRow,thePlayer)
+			mAction,mTarget = backRowTree.action
+			if mAction == 'Attack':
+				thePlayer,frontRow,backRow = Attack(x,thePlayer,frontRow,backRow,False)
+				x.status = 'Attacking'
+				backRow = updateEnemey(x,backRow)
+			elif mAction == 'Defend':
+				x.status = 'Defending'
+				x = Defend(x,False)
+				backRow = updateEnemey(x,backRow)
+			elif mAction == 'Heal':
+				x.status = 'Healing'
+				x,target = Heal(x,mTarget)
+				backRow = updateEnemey(x,backRow)
+				if target.row == 1:
+					frontRow = updateEnemey(target,frontRow)
+				else:
+					backRow = updateEnemey(target,backRow)
+		
+		
 
-	print '==================' + frontRow[0].status
+	#print '==================' + frontRow[0].status
 	return [thePlayer,frontRow,backRow]	
 
 
