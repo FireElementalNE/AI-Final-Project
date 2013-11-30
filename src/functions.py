@@ -2,7 +2,7 @@ import sys,os,random,time,trees
 from random import randint
 from config import *
 from player import Player
-from enemies import Enemies
+from enemies import *
 
 
 def endofLine():
@@ -20,77 +20,21 @@ def tryAgain():
     clearScreen()
     print 'please try again'
 
-def updateEnemey(enemy,row):
-	for i in range(len(row)):
-		if row[i] == enemy.enemyId:
-			row[i] == enemy
-	return row
-
-def validId(frontRow,backRow,mId):
-	for x in frontRow:
-		if x.enemyId == mId:
-			return True
-	for x in backRow:
-		if x.enemyId == mId:
-			return True
-	return False
-
-def getEnemey(frontRow,backRow,mId):
-	for x in frontRow:
-		if x.enemyId == mId:
-			return x
-	for x in backRow:
-		if x.enemyId == mId:
-			return x
-
-def printEnemies(frontRow,backRow):
-	print '-------------FRONT ROW--------------'
-	for x in frontRow:
-		x.printInfoLine()
-	endofLine()
-	print '-------------BACK ROW---------------'
-	for x in backRow: 
-		x.printInfoLine()
-
-def resetEnemies(frontRow,backRow):
-	for x in frontRow:
-		x.currentDefence = x.defence
-		#x.status = 'Nothing'
-	for x in backRow:      
-		x.currentDefence = x.defence
-		if x.enemyType == 'Dark Elf Cleric':
-			if x.magicPoints - x.currentMP < MPTURN:
-				x.currentMP = x.magicPoints
-			else:
-				x.currentMP = x.currentMP + MPTURN
-		#x.status = 'Nothing'
-	return [frontRow,backRow]
-
 def resetPlayer(thePlayer):
 	thePlayer.currentDefence = thePlayer.defence
 	return thePlayer
 
-
-def removeDeadEnemeies(row):
-	return filter(lambda x: x.currentHP > 0, row)
-
-def changeRow(row,enemy):
-	for i in range(len(row)):
-		if row[i].enemyId == enemy.enemyId:
-			row[i] = enemy
-	return row
-
 def AttackEnemy(attacker,defender):
-	lowerBound = int(attacker.attack * 0.7)
-	upperBound = int(attacker.attack * 1.5)
+	lowerBound = int(attacker.currentAttack * LOWER_BOUND_ATTACK_DAMAGE)
+	upperBound = int(attacker.currentAttack * UPPER_BOUND_ATTACK_DAMAGE)
 	baseDamage = randint(lowerBound,upperBound)
-	armorReduction = (((150 - defender.currentDefence) / 100.0) * 0.7)
-	trueDamage = int(baseDamage * armorReduction)
+	ar = armorReduction(defender.currentDefence)
+	trueDamage = int(baseDamage * ar)
 	defender.currentHP = defender.currentHP - trueDamage
 	return [defender,trueDamage]
 
 
-def Attack(attacker,defender,frontRow,backRow,playerAttack):
+def Attack(attacker,defender,allEnemies,playerAttack):
 	if playerAttack:
 		doubleAttack = randint(1,100) <= attacker.doubleSwing
 		dodge = randint(1,100) <= defender.dodge
@@ -99,10 +43,7 @@ def Attack(attacker,defender,frontRow,backRow,playerAttack):
 		else:
 			enemyAfterAttack,dmgDone = AttackEnemy(attacker,defender)
 			print 'You attacked ' + enemyAfterAttack.enemyType + ' and dealt ' + str(dmgDone) + ' damage!'
-			if defender.row == 1:
-				frontRow = changeRow(frontRow,enemyAfterAttack)
-			else:
-				backRow = changeRow(backRow,enemyAfterAttack)
+			allEnemies.updateEnemey(enemyAfterAttack)
 		if doubleAttack:
 			print 'Double Swing!!!'
 			dodge = randint(1,100) <= defender.dodge
@@ -113,11 +54,8 @@ def Attack(attacker,defender,frontRow,backRow,playerAttack):
 				doubleAttack = doubleAttackChance <= attacker.doubleSwing
 				enemyAfterAttack,dmgDone = AttackEnemy(attacker,defender)
 				print 'You attacked ' + enemyAfterAttack.enemyType + ' and dealt ' + str(dmgDone) + ' damage!'
-				if defender.row == 1:
-				    frontRow = changeRow(frontRow,enemyAfterAttack)
-				else:
-					backRow = changeRow(backRow,enemyAfterAttack)
-		return [attacker,frontRow,backRow]
+				allEnemies.updateEnemey(enemyAfterAttack)
+		return [attacker,allEnemies]
 	else:
 		playerAfterAttack = defender
 		doubleAttack = randint(1,100) <= attacker.doubleSwing
@@ -135,7 +73,7 @@ def Attack(attacker,defender,frontRow,backRow,playerAttack):
 			else:
 				playerAfterAttack,dmgDone = AttackEnemy(attacker,defender)
 				print attacker.enemyType + ' Attacked you for ' + str(dmgDone) + ' damage!'
-		return [playerAfterAttack,frontRow,backRow]
+		return [playerAfterAttack,allEnemies]
 
 def Defend(el,playerDefend):
 	printString = ''
@@ -144,12 +82,12 @@ def Defend(el,playerDefend):
 	healingBonus = 0
 	if playerDefend:
 		printString = 'You'
-		defenceBonus = 1.5
-		healingBonus = 0.1
+		defenceBonus = PLAYER_DEFENCE_BONUS
+		healingBonus = PLAYER_HEALING_BONUS
 	else:
 		printString = el.enemyType
-		defenceBonus = 1.2
-		healingBonus = 0.06
+		defenceBonus = ENEMY_DEFENCE_BONUS
+		healingBonus = ENEMY_HEALING_BONUS
 	el.currentDefence = el.currentDefence * defenceBonus
 	if el.currentHP >= (el.hitPoints * 1 - healingBonus):
 		healAmount = el.hitPoints - el.currentHP
@@ -157,8 +95,7 @@ def Defend(el,playerDefend):
 	else:
 		healAmount = int(el.hitPoints * healingBonus)
 		el.currentHP = el.currentHP + int(el.hitPoints * healingBonus)
-
-	print printString + ' Defended! New Armor: ' + str(el.currentDefence * defenceBonus) + '! Healed for ' + str(healAmount) + '!'
+	print printString + ' Defended! New Armor: ' + str(el.currentDefence) + '! Healed for ' + str(healAmount) + '!'
 	return el
 
 def Heal(source,target):
@@ -173,56 +110,85 @@ def Heal(source,target):
 	source.currentMP = source.currentMP - HEALCOST
 	return [source,target]
 
-def enemyTurn(thePlayer,frontRow,backRow):
-	for x in frontRow:
+def FireBall(source,thePlayer):
+	baseDamage = FIREBALL_DAMAGE
+	ar = armorReduction(thePlayer.currentDefence)
+	trueDamage = int(baseDamage * ar)
+	thePlayer.currentHP = thePlayer.currentHP - trueDamage
+	source.currentMP = source.currentMP - FIREBALL_COST
+	print source.enemyType + ' Cast FireBall and Dealt ' + str(trueDamage) + ' Damage!'
+	return [source,thePlayer]
+
+def Buff(source,target):
+	source.currentMP = source.currentMP - ATTACK_BUFF_COST
+	target.currentAttack = int(target.currentAttack * ATTACK_BUFF_AMOUNT)
+	print source.enemyType + ' Buffed ' + target.enemyType +'\'s attack! New Attack: ' + str(target.currentAttack)
+	return [source,target]
+
+def enemyTurn(thePlayer,allEnemies):
+	for x in allEnemies.frontRow:
 		frontRowTree = trees.OrcFighterTree(x,thePlayer)
 		mAction = frontRowTree.action
-		#print x.printInfo()
 		if mAction == 'Attack':
-			thePlayer,frontRow,backRow = Attack(x,thePlayer,frontRow,backRow,False)
+			thePlayer,allEnemies = Attack(x,thePlayer,allEnemies,False)
 			x.status = 'Attacking'
-			frontRow = updateEnemey(x,frontRow)
+			allEnemies.updateEnemey(x)
 		elif mAction == 'Defend':
 			x.status = 'Defending'
 			x = Defend(x,False)
-			frontRow = updateEnemey(x,frontRow)
-	for x in backRow:
+			allEnemies.updateEnemey(x)
+	for x in allEnemies.backRow:
 		backRowTree = None
 		if x.enemyType == 'Dark Elf Archer':
 			backRowTree = trees.ArcherTree(x,thePlayer)
 			mAction = backRowTree.action
 			if mAction == 'Attack':
-				thePlayer,frontRow,backRow = Attack(x,thePlayer,frontRow,backRow,False)
+				thePlayer,allEnemies = Attack(x,thePlayer,allEnemies,False)
 				x.status = 'Attacking'
-				backRow = updateEnemey(x,backRow)
+				allEnemies.updateEnemey(x)
 			elif mAction == 'Defend':
 				x.status = 'Defending'
 				x = Defend(x,False)
-				backRow = updateEnemey(x,backRow)
+				allEnemies.updateEnemey(x)
 		elif x.enemyType == 'Dark Elf Cleric':
-			backRowTree = trees.ClericTree(x,frontRow,backRow,thePlayer)
+			backRowTree = trees.ClericTree(x,allEnemies,thePlayer)
 			mAction,mTarget = backRowTree.action
 			if mAction == 'Attack':
-				thePlayer,frontRow,backRow = Attack(x,thePlayer,frontRow,backRow,False)
+				thePlayer,allEnemies = Attack(x,thePlayer,allEnemies,False)
 				x.status = 'Attacking'
-				backRow = updateEnemey(x,backRow)
+				allEnemies.updateEnemey(x)
 			elif mAction == 'Defend':
 				x.status = 'Defending'
 				x = Defend(x,False)
-				backRow = updateEnemey(x,backRow)
+				allEnemies.updateEnemey(x)
 			elif mAction == 'Heal':
 				x.status = 'Healing'
 				x,target = Heal(x,mTarget)
-				backRow = updateEnemey(x,backRow)
-				if target.row == 1:
-					frontRow = updateEnemey(target,frontRow)
-				else:
-					backRow = updateEnemey(target,backRow)
-		
-		
+				allEnemies.updateEnemey(x)
+				allEnemies.updateEnemey(target)
+		elif x.enemyType == 'Dark Elf Wizard':
+			backRowTree = trees.WizardTree(x,allEnemies,thePlayer)
+			mAction,mTarget = backRowTree.action
+			if mAction == 'Attack':
+				thePlayer,allEnemies = Attack(x,thePlayer,allEnemies,False)
+				x.status = 'Attacking'
+				allEnemies.updateEnemey(x)
+			elif mAction == 'Defend':
+				x.status = 'Defending'
+				x = Defend(x,False)
+				allEnemies.updateEnemey(x)
+			elif mAction == 'FireBall':
+				x.status = 'Cast FireBall'
+				x,thePlayer = FireBall(x,thePlayer)
+				allEnemies.updateEnemey(x)
+			elif mAction == 'AttackBuff':
+				x.status = 'Buffing Ally'
+				x,target = Buff(x,mTarget)
+				allEnemies.updateEnemey(x)
+				allEnemies.updateEnemey(target)
 
-	#print '==================' + frontRow[0].status
-	return [thePlayer,frontRow,backRow]	
+
+	return [thePlayer,allEnemies]	
 
 
 

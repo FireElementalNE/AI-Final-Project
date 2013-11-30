@@ -1,14 +1,12 @@
+from random import randint
 from player import Player
 from enemies import Enemies
 from config import *
 
-#HEALCOST = 35
-#HEALAMOUNT = 0.20
-
-def getWorstHurt(frontRow,backRow):
+def getWorstHurt(allEnemies):
 	worstHurt = None
 	minHP = 100000000000.0
-	for x in frontRow+backRow:
+	for x in allEnemies.getAllEnemies():
 		#print str(x.enemyId) + ' ' + str(x.currentHP) + ' ' + str(x.hitPoints)
 		if x.currentHP / x.hitPoints < minHP:
 			minHP = x.currentHP / x.hitPoints
@@ -16,10 +14,15 @@ def getWorstHurt(frontRow,backRow):
 	#print str(worstHurt.enemyId) + '============================'
 	return worstHurt
 
+def BuffAlly(allEnemies):
+	for x in allEnemies.getAllEnemies():
+		if x.enemyType != 'Dark Elf Cleric' and x.enemyType != 'Dark Elf Wizard':
+			return x
+
 class OrcFighterTree:
 	action = ''
 	def __init__(self,of,thePlayer):
-		if of.currentHP < (0.7 * of.hitPoints) and  of.status != 'Defending':
+		if of.currentHP < (FIGHTER_HEAL_THRESHHOLD * of.hitPoints) and  of.status != 'Defending':
 			self.action = 'Defend'
 		else:
 			self.action = 'Attack'
@@ -27,16 +30,16 @@ class OrcFighterTree:
 class ArcherTree:
 	action = ''
 	def __init__(self,of,thePlayer):
-		if of.currentHP < (0.75 * of.hitPoints) and  of.status != 'Defending':
+		if of.currentHP < (ARCHER_HEAL_THRESHOLD * of.hitPoints) and  of.status != 'Defending':
 			self.action = 'Defend'
 		else:
 			self.action = 'Attack'
 
 class ClericTree:
 	action = ''
-	def __init__(self,cleric,frontRow,backRow,thePlayer):
+	def __init__(self,cleric,allEnemies,thePlayer):
 		if cleric.currentMP >= HEALCOST:
-			worstHurt = getWorstHurt(frontRow,backRow)
+			worstHurt = getWorstHurt(allEnemies)
 			if worstHurt.enemyId == cleric.enemyId:
 				self.action = ['Defend',None]
 			else:
@@ -46,6 +49,20 @@ class ClericTree:
 				self.action = ['Defend',None]
 			else:
 				self.action = ['Attack',None]
+
+class WizardTree:
+	action = ''
+	def __init__(self,wizard,allEnemies,thePlayer):
+		if wizard.currentMP >= FIREBALL_COST: #
+			self.action = ['FireBall',None]
+		elif wizard.currentMP >= ATTACK_BUFF_COST and randint(1,100) <= BUFF_PROC:
+			self.action = ['AttackBuff',BuffAlly(allEnemies)]
+		else:
+			if wizard.currentHP < (0.70 * wizard.hitPoints):
+				self.action = ['Defend',None]
+			else:
+				self.action = ['Attack',None]
+
 
 
 

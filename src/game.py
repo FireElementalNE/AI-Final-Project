@@ -2,23 +2,13 @@ import sys,time,functions,getpass
 from random import randint
 from config import *
 from player import Player
-from enemies import Enemies
-#p1 = Player('Fighter')
-#p2 = Player('Wizard')
-#p3 = Player('Thief')
-#e1 = Enemies('HOF',1)
-#e2 = Enemies('LOF',2)
-#e3 = Enemies('DEW',3)
-#e4 = Enemies('DEC',4)
-#e5 = Enemies('DEA',5)
+from enemies import *
 
 playerClasses = ['Fighter', 'Wizard', 'Thief']
 enemyClasses = ['HOF','LOF','DEW','DEC','DEA']
 frontRowPossibilities = ['HOF','LOF']
 backRowPossibilities = ['DEW','DEC','DEA']
 commandPossibilities = ['Attack','Defend', 'Exit']
-
-
 
 functions.clearScreen()
 print 'Welcome to AI Battle!'
@@ -39,8 +29,7 @@ while True:
 
 thePlayer = Player(playerClasses[i])
 thePlayer.printInfo()
-enemyRow1 = []
-enemyRow2 = []
+
 print 'How many enemies do you want to fight?'
 while True:
     try:
@@ -52,7 +41,6 @@ while True:
 frontRowCount = (enemyCount / 2) + 1
 backRowCount = enemyCount - frontRowCount
 functions.endofLine()
-#print 'FRONT ROW COUNT: ' + str(frontRowCount) + ' BACK ROW COUNT: ' + str(backRowCount)
 
 print 'Picking Enemies!'
 functions.endofLine()
@@ -61,12 +49,12 @@ backRow = []
 
 for i in range(frontRowCount):
     tempEnemyIndex = randint(0,len(frontRowPossibilities)-1)
-    frontRow.append(Enemies(frontRowPossibilities[tempEnemyIndex],i))
+    frontRow.append(Enemy(frontRowPossibilities[tempEnemyIndex],i))
 for i in range(backRowCount):
     tempEnemyIndex = randint(0,len(backRowPossibilities)-1)
-    backRow.append(Enemies(backRowPossibilities[tempEnemyIndex],i+len(frontRow)))
+    backRow.append(Enemy(backRowPossibilities[tempEnemyIndex],i+len(frontRow)))
 
-
+allEnemies = Enemies(frontRow,backRow)
 
 sys.stdout.write('Starting Game!')
 #time.sleep(1)
@@ -80,9 +68,15 @@ functions.endofLine()
 command = ''
 
 while command.lower() not in exitStrings:
+    if len(allEnemies.getAllEnemies()) <= 0:
+        print 'YOU WIN!'
+        break;
+    elif thePlayer.currentHP <= 0:
+        print 'YOU LOST!'
+        break;
     wait = getpass.getpass('press enter key to continue...')
     thePlayer = functions.resetPlayer(thePlayer)
-    functions.printEnemies(frontRow,backRow)
+    allEnemies.printEnemies()
     functions.endofLine()
     thePlayer.printInfoLine()
     functions.endofLine()
@@ -100,30 +94,26 @@ while command.lower() not in exitStrings:
     command = commandPossibilities[command]
     if  command == 'Attack':
         print 'Attack Who?'
-        for x in frontRow+backRow:
+        for x in allEnemies.getAllEnemies():
             print '[' + str(x.enemyId) + '] ' + x.enemyType
         try:
             enemyToAttackID = int(raw_input('>'))
-            if not functions.validId(frontRow,backRow,enemyToAttackID):
+            if not allEnemies.validId(enemyToAttackID):
                 raise ValueError
         except ValueError:
             functions.tryAgain()
             continue
-        enemyToAttack = functions.getEnemey(frontRow,backRow,enemyToAttackID)
-        thePlayer,frontRow,backRow = functions.Attack(thePlayer,enemyToAttack,frontRow,backRow,True)
+        enemyToAttack = allEnemies.getEnemey(enemyToAttackID)
+        thePlayer,allEnemies= functions.Attack(thePlayer,enemyToAttack,allEnemies,True)
     if command == 'Defend':
         thePlayer = functions.Defend(thePlayer,True)
         print 'You are Defending!'
         print 'current Stats:'
         thePlayer.printInfo('--> ')
-    frontRow,backRow = functions.resetEnemies(frontRow,backRow)
-    frontRow = functions.removeDeadEnemeies(frontRow)
-    backRow = functions.removeDeadEnemeies(backRow)
+    allEnemies.resetEnemies()
+    allEnemies.removeDeadEnemeies()
     functions.endofLine()
-    print 'Enemy Turn!'
     functions.endofLine()
-    thePlayer,frontRow,backRow = functions.enemyTurn(thePlayer,frontRow,backRow)
+    thePlayer,allEnemies = functions.enemyTurn(thePlayer,allEnemies)
     functions.endofLine()
-
-    #command = 'e'
 

@@ -1,5 +1,7 @@
 from sys import stdout
-class Enemies:
+from config import *
+
+class Enemy:
     enemyType = ''
     enemyId = ''
     hitPoints = 0
@@ -16,6 +18,7 @@ class Enemies:
     status = 'Nothing'
     magicPoints = 0
     currentMP = 0
+    currentAttack = 0
     def __init__(self, EnemyType,ID):
         if EnemyType == 'HOF':
             self.enemyType = 'Heavy Orc Fighter'
@@ -29,6 +32,7 @@ class Enemies:
             self.row = 1
             self.currentDefence = self.defence
             self.currentHP = self.hitPoints
+            self.currentAttack = self.attack
         elif EnemyType == 'LOF':
             self.enemyType = 'Light Orc Figher'
             self.enemyId = ID
@@ -41,6 +45,7 @@ class Enemies:
             self.row = 1
             self.currentDefence = self.defence
             self.currentHP = self.hitPoints
+            self.currentAttack = self.attack
         elif EnemyType == 'DEW':
             self.enemyType = 'Dark Elf Wizard'
             self.enemyId = ID
@@ -55,6 +60,7 @@ class Enemies:
             self.currentHP = self.hitPoints
             self.magicPoints = 100
             self.currentMP = self.magicPoints
+            self.currentAttack = self.attack
         elif EnemyType == 'DEC':
             self.enemyType = 'Dark Elf Cleric'
             self.enemyId = ID
@@ -69,6 +75,7 @@ class Enemies:
             self.currentHP = self.hitPoints
             self.magicPoints = 100
             self.currentMP = self.magicPoints
+            self.currentAttack = self.attack
         elif EnemyType == 'DEA':
             self.enemyType = 'Dark Elf Archer'
             self.enemyId = ID
@@ -81,6 +88,7 @@ class Enemies:
             self.row = 2
             self.currentDefence = self.defence
             self.currentHP = self.hitPoints
+            self.currentAttack = self.attack
     def printInfo(self):
         print 'ID         = ' + str(self.enemyId)
         print 'Name       = ' + self.enemyType
@@ -96,3 +104,65 @@ class Enemies:
     def printInfoLine(self):
          stdout.write('ID: ' + str(self.enemyId) + ' Type:' + str(self.enemyType) + ' HP:' + str(self.currentHP) + ' STATUS: ' + self.status + ' MP: ' + str(self.currentMP) + '\n')
 
+class Enemies:
+    frontRow = []
+    backRow = []
+    def __init__(self,fr,br):
+        self.frontRow = fr
+        self.backRow = br
+
+    def updateEnemey(self,enemy):
+        if enemy.row == 1:
+            for i in range(len(self.frontRow)):
+                if self.frontRow[i] == enemy.enemyId:
+                    self.frontRow[i] = enemy
+        else:
+            for i in range(len(self.backRow)):
+                if self.backRow[i] == enemy.enemyId:
+                    self.backRow[i] = enemy
+
+    def validId(self,mId):
+        for x in self.frontRow:
+            if x.enemyId == mId:
+                return True
+        for x in self.backRow:
+            if x.enemyId == mId:
+                return True
+        return False
+
+    def getEnemey(self,mId):
+        for x in self.frontRow:
+            if x.enemyId == mId:
+                return x
+        for x in self.backRow:
+            if x.enemyId == mId:
+                return x
+
+    def printEnemies(self):
+        print '-------------FRONT ROW--------------'
+        for x in self.frontRow:
+            x.printInfoLine()
+        stdout.write('\n')
+        print '-------------BACK ROW---------------'
+        for x in self.backRow: 
+            x.printInfoLine()
+
+    def removeDeadEnemeies(self):
+        self.frontRow = filter(lambda x: x.currentHP > 0, self.frontRow)
+        self.backRow = filter(lambda x: x.currentHP > 0, self.backRow)
+
+    def resetEnemies(self):
+        for x in self.frontRow:
+            x.currentDefence = x.defence
+            x.currentAttack = x.attack
+        for x in self.backRow:      
+            x.currentDefence = x.defence
+            x.currentAttack = x.attack
+            if x.enemyType == 'Dark Elf Cleric' or x.enemyType == 'Dark Elf Wizard':
+                if x.magicPoints - x.currentMP < MPTURN:
+                    x.currentMP = x.magicPoints
+                else:
+                    x.currentMP = x.currentMP + MPTURN
+
+    def getAllEnemies(self):
+        return self.frontRow+self.backRow

@@ -9,6 +9,7 @@ class Player:
     specials = []
     doubleSwing = 0
     currentDefence = 0
+    currentAttack = 0
     def __init__(self, CharacterType):
         self.name = CharacterType
         if CharacterType == 'Fighter':
@@ -20,15 +21,7 @@ class Player:
             self.doubleSwing = 15
             self.currentDefence = self.defence
             self.currentHP = self.hitPoints
-        elif CharacterType == 'Wizard':
-            self.hitPoints = 370
-            self.attack = 120
-            self.defence = 40
-            self.dodge = 15
-            self.hit = 65
-            self.doubleSwing = 5
-            self.currentDefence = self.defence
-            self.currentHP = self.hitPoints
+            self.currentAttack = self.attack
         elif CharacterType == 'Thief':
             self.hitPoints = 500
             self.attack = 65
@@ -38,6 +31,7 @@ class Player:
             self.doubleSwing = 40
             self.currentDefence = self.defence
             self.currentHP = self.hitPoints
+            self.currentAttack = self.attack
     def printInfo(self,indent=''):
         print indent + 'Class:     = ' + self.name
         print indent + 'Hit Points = ' + str(self.hitPoints)
