@@ -7,11 +7,9 @@ def getWorstHurt(allEnemies):
 	worstHurt = None
 	minHP = 100000000000.0
 	for x in allEnemies.getAllEnemies():
-		#print str(x.enemyId) + ' ' + str(x.currentHP) + ' ' + str(x.hitPoints)
 		if x.currentHP / x.hitPoints < minHP:
 			minHP = x.currentHP / x.hitPoints
 			worstHurt = x
-	#print str(worstHurt.enemyId) + '============================'
 	return worstHurt
 
 def BuffAlly(allEnemies):
