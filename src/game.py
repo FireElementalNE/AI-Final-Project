@@ -4,7 +4,7 @@ from config import *
 from player import Player
 from enemies import *
 
-playerClasses = ['Fighter', 'Wizard', 'Thief']
+playerClasses = ['Fighter', 'Thief']
 enemyClasses = ['HOF','LOF','DEW','DEC','DEA']
 frontRowPossibilities = ['HOF','LOF']
 backRowPossibilities = ['DEW','DEC','DEA']
@@ -19,7 +19,7 @@ while True:
     for i in range(len(playerClasses)):
         print '[' + str(i)+ ']:' + ' ' + playerClasses[i]
     try:
-        playerClassChoice = 0#int(raw_input('>'))
+        playerClassChoice = int(raw_input('>'))
         if playerClassChoice >= 0 and playerClassChoice <= len(playerClasses):
             break
         else:
@@ -27,13 +27,13 @@ while True:
     except ValueError:
         print 'Incorrect Choice! Please Try again!'
 
-thePlayer = Player(playerClasses[i])
+thePlayer = Player(playerClasses[playerClassChoice])
 thePlayer.printInfo()
 
 print 'How many enemies do you want to fight?'
 while True:
     try:
-        enemyCount = 5#int(raw_input('>'))
+        enemyCount = int(raw_input('>'))
         break
     except ValueError:
         continue
