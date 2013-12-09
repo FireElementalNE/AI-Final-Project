@@ -126,8 +126,9 @@ def Buff(source,target):
 	return [source,target]
 
 def enemyTurn(thePlayer,allEnemies):
+	allEnemies.state.updateState(allEnemies)
 	for x in allEnemies.frontRow:
-		frontRowTree = trees.OrcFighterTree(x,thePlayer)
+		frontRowTree = trees.OrcFighterTree(x,thePlayer,allEnemies.state.currentState)
 		mAction = frontRowTree.action
 		if mAction == 'Attack':
 			thePlayer,allEnemies = Attack(x,thePlayer,allEnemies,False)
@@ -140,7 +141,7 @@ def enemyTurn(thePlayer,allEnemies):
 	for x in allEnemies.backRow:
 		backRowTree = None
 		if x.enemyType == 'Dark Elf Archer':
-			backRowTree = trees.ArcherTree(x,thePlayer)
+			backRowTree = trees.ArcherTree(x,thePlayer,allEnemies.state.currentState)
 			mAction = backRowTree.action
 			if mAction == 'Attack':
 				thePlayer,allEnemies = Attack(x,thePlayer,allEnemies,False)
@@ -151,7 +152,7 @@ def enemyTurn(thePlayer,allEnemies):
 				x = Defend(x,False)
 				allEnemies.updateEnemey(x)
 		elif x.enemyType == 'Dark Elf Cleric':
-			backRowTree = trees.ClericTree(x,allEnemies,thePlayer)
+			backRowTree = trees.ClericTree(x,allEnemies,thePlayer,allEnemies.state.currentState)
 			mAction,mTarget = backRowTree.action
 			if mAction == 'Attack':
 				thePlayer,allEnemies = Attack(x,thePlayer,allEnemies,False)
@@ -167,7 +168,7 @@ def enemyTurn(thePlayer,allEnemies):
 				allEnemies.updateEnemey(x)
 				allEnemies.updateEnemey(target)
 		elif x.enemyType == 'Dark Elf Wizard':
-			backRowTree = trees.WizardTree(x,allEnemies,thePlayer)
+			backRowTree = trees.WizardTree(x,allEnemies,thePlayer,allEnemies.state.currentState)
 			mAction,mTarget = backRowTree.action
 			if mAction == 'Attack':
 				thePlayer,allEnemies = Attack(x,thePlayer,allEnemies,False)

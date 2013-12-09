@@ -107,9 +107,11 @@ class Enemy:
 class Enemies:
     frontRow = []
     backRow = []
-    def __init__(self,fr,br):
+    state = None
+    def __init__(self,fr,br,st):
         self.frontRow = fr
         self.backRow = br
+        self.state = st
 
     def updateEnemey(self,enemy):
         if enemy.row == 1:
@@ -139,6 +141,7 @@ class Enemies:
                 return x
 
     def printEnemies(self):
+        print 'ENEMY STATE: ' + self.state.currentState
         print '-------------FRONT ROW--------------'
         for x in self.frontRow:
             x.printInfoLine()

@@ -3,6 +3,7 @@ from random import randint
 from config import *
 from player import Player
 from enemies import *
+from states import States
 
 playerClasses = ['Fighter', 'Thief']
 enemyClasses = ['HOF','LOF','DEW','DEC','DEA']
@@ -19,7 +20,7 @@ while True:
     for i in range(len(playerClasses)):
         print '[' + str(i)+ ']:' + ' ' + playerClasses[i]
     try:
-        playerClassChoice = int(raw_input('>'))
+        playerClassChoice = 1#int(raw_input('>'))
         if playerClassChoice >= 0 and playerClassChoice <= len(playerClasses):
             break
         else:
@@ -33,7 +34,7 @@ thePlayer.printInfo()
 print 'How many enemies do you want to fight?'
 while True:
     try:
-        enemyCount = int(raw_input('>'))
+        enemyCount = 3#int(raw_input('>'))
         break
     except ValueError:
         continue
@@ -54,7 +55,8 @@ for i in range(backRowCount):
     tempEnemyIndex = randint(0,len(backRowPossibilities)-1)
     backRow.append(Enemy(backRowPossibilities[tempEnemyIndex],i+len(frontRow)))
 
-allEnemies = Enemies(frontRow,backRow)
+initState = States('Attack!')
+allEnemies = Enemies(frontRow,backRow,initState)
 
 sys.stdout.write('Starting Game!')
 #time.sleep(1)
@@ -66,7 +68,7 @@ sys.stdout.write('.')
 functions.endofLine()
 functions.endofLine()
 command = ''
-
+functions.endofLine()
 while command.lower() not in exitStrings:
     if len(allEnemies.getAllEnemies()) <= 0:
         print 'YOU WIN!'
@@ -76,6 +78,7 @@ while command.lower() not in exitStrings:
         break;
     wait = getpass.getpass('press enter key to continue...')
     thePlayer = functions.resetPlayer(thePlayer)
+    functions.endofLine()
     allEnemies.printEnemies()
     functions.endofLine()
     thePlayer.printInfoLine()
@@ -110,10 +113,11 @@ while command.lower() not in exitStrings:
         print 'You are Defending!'
         print 'current Stats:'
         thePlayer.printInfo('--> ')
-    allEnemies.resetEnemies()
-    allEnemies.removeDeadEnemeies()
-    functions.endofLine()
-    functions.endofLine()
-    thePlayer,allEnemies = functions.enemyTurn(thePlayer,allEnemies)
-    functions.endofLine()
+    if command.lower() not in exitStrings:
+        allEnemies.resetEnemies()
+        allEnemies.removeDeadEnemeies()
+        functions.endofLine()
+        functions.endofLine()
+        thePlayer,allEnemies = functions.enemyTurn(thePlayer,allEnemies)
+        functions.endofLine()
 
