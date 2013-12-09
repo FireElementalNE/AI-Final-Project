@@ -39,8 +39,6 @@ class ArcherTree:
 				self.action = 'Defend'
 			else:
 				self.action = 'Attack'
-		else:
-			print 'wait waht?'  + enemyTeamState
 
 class ClericTree:
 	action = ''
@@ -59,8 +57,6 @@ class ClericTree:
 					self.action = ['Defend',None]
 				else:
 					self.action = ['Attack',None]
-		else:
-			print 'wait waht?' + str(enemyTeamState)
 
 
 class WizardTree:
@@ -78,8 +74,6 @@ class WizardTree:
 					self.action = ['Defend',None]
 				else:
 					self.action = ['Attack',None]
-		else:
-			print 'wait waht?'  + enemyTeamState
 
 
 
