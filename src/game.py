@@ -59,13 +59,6 @@ initState = States('Attack!')
 allEnemies = Enemies(frontRow,backRow,initState)
 
 sys.stdout.write('Starting Game!')
-time.sleep(1)
-sys.stdout.write('.')
-time.sleep(1)
-sys.stdout.write('.')
-time.sleep(1)
-sys.stdout.write('.')
-functions.endofLine()
 functions.endofLine()
 command = ''
 functions.endofLine()
