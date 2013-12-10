@@ -20,7 +20,7 @@ while True:
     for i in range(len(playerClasses)):
         print '[' + str(i)+ ']:' + ' ' + playerClasses[i]
     try:
-        playerClassChoice = 1#int(raw_input('>'))
+        playerClassChoice = int(raw_input('>'))
         if playerClassChoice >= 0 and playerClassChoice <= len(playerClasses):
             break
         else:
@@ -34,7 +34,7 @@ thePlayer.printInfo()
 print 'How many enemies do you want to fight?'
 while True:
     try:
-        enemyCount = 3#int(raw_input('>'))
+        enemyCount = int(raw_input('>'))
         break
     except ValueError:
         continue
@@ -59,11 +59,11 @@ initState = States('Attack!')
 allEnemies = Enemies(frontRow,backRow,initState)
 
 sys.stdout.write('Starting Game!')
-#time.sleep(1)
+time.sleep(1)
 sys.stdout.write('.')
-#time.sleep(1)
+time.sleep(1)
 sys.stdout.write('.')
-#time.sleep(1)
+time.sleep(1)
 sys.stdout.write('.')
 functions.endofLine()
 functions.endofLine()
