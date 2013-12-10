@@ -19,6 +19,8 @@ class States:
 			allCurrentMP + x.currentMP
 		if maxMP == 0:
 			maxMP = 1
+		if maxHP == 0:
+			maxHP = 1
 		percentageHP = (float(allCurrentHP) / maxHP) * 100
 		percentageMP = (float(allCurrentMP) / maxMP) * 100
 		if self.currentState == 'Attack!':
