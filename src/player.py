@@ -15,19 +15,19 @@ class Player:
         if CharacterType == 'Fighter':
             self.hitPoints = 710
             self.attack = 90
-            self.defence = 80
+            self.defence = 75
             self.dodge = 5
-            self.hit = 60
+            self.hit = 90
             self.doubleSwing = 15
             self.currentDefence = self.defence
             self.currentHP = self.hitPoints
             self.currentAttack = self.attack
         elif CharacterType == 'Thief':
             self.hitPoints = 500
-            self.attack = 65
-            self.defence = 60
+            self.attack = 60
+            self.defence = 55
             self.dodge = 30
-            self.hit = 80
+            self.hit = 60
             self.doubleSwing = 40
             self.currentDefence = self.defence
             self.currentHP = self.hitPoints
