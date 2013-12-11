@@ -1,8 +1,11 @@
 import platform
+from sys import argv
 
+# get armor reduction percentage
 def armorReduction(cd):
 	return (((150 - cd) / 100.0) * 0.7)
 
+# CONFIGS forrr balancing
 MPTURN = 10
 HEALCOST = 35
 HEALAMOUNT = 0.10
@@ -24,3 +27,9 @@ UPPER_BOUND_ATTACK_DAMAGE = 1.5
 
 myOS = platform.system()
 exitStrings = ['e','exit','bye','quit']
+afermativeStrings = ['yes','y']
+
+if __name__ == "__main__": # cannot call directly
+    print 'This file, ' + argv[0] + ', is only for import....'
+    print 'to Play the game please run main.py:'
+    print 'usage: python main.py'

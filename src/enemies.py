@@ -1,6 +1,6 @@
-from sys import stdout
+from sys import stdout,argv
 from config import *
-
+# class forr a single enemy
 class Enemy:
     enemyType = ''
     enemyId = ''
@@ -20,7 +20,7 @@ class Enemy:
     currentMP = 0
     currentAttack = 0
     def __init__(self, EnemyType,ID):
-        if EnemyType == 'HOF':
+        if EnemyType == 'HOF': # create HOF (see table 2)
             self.enemyType = 'Heavy Orc Fighter'
             self.enemyId = ID
             self.hitPoints = 300
@@ -33,7 +33,7 @@ class Enemy:
             self.currentDefence = self.defence
             self.currentHP = self.hitPoints
             self.currentAttack = self.attack
-        elif EnemyType == 'LOF':
+        elif EnemyType == 'LOF': # create LOF (see table 2)
             self.enemyType = 'Light Orc Figher'
             self.enemyId = ID
             self.hitPoints = 190
@@ -46,7 +46,7 @@ class Enemy:
             self.currentDefence = self.defence
             self.currentHP = self.hitPoints
             self.currentAttack = self.attack
-        elif EnemyType == 'DEW':
+        elif EnemyType == 'DEW': # create DEW (see table 2)
             self.enemyType = 'Dark Elf Wizard'
             self.enemyId = ID
             self.hitPoints = 140
@@ -61,7 +61,7 @@ class Enemy:
             self.magicPoints = 100
             self.currentMP = self.magicPoints
             self.currentAttack = self.attack
-        elif EnemyType == 'DEC':
+        elif EnemyType == 'DEC': # create DEC (see table 2)
             self.enemyType = 'Dark Elf Cleric'
             self.enemyId = ID
             self.hitPoints = 140
@@ -76,7 +76,7 @@ class Enemy:
             self.magicPoints = 100
             self.currentMP = self.magicPoints
             self.currentAttack = self.attack
-        elif EnemyType == 'DEA':
+        elif EnemyType == 'DEA': # create DEA (see table 2)
             self.enemyType = 'Dark Elf Archer'
             self.enemyId = ID
             self.hitPoints = 170
@@ -89,7 +89,7 @@ class Enemy:
             self.currentDefence = self.defence
             self.currentHP = self.hitPoints
             self.currentAttack = self.attack
-    def printInfo(self):
+    def printInfo(self): # pretty printing
         print 'ID         = ' + str(self.enemyId)
         print 'Name       = ' + self.enemyType
         print 'Hit Points = ' + str(self.hitPoints)
@@ -101,19 +101,21 @@ class Enemy:
         print 'Row        = ' + str(self.row)
         print 'C Defence  = ' + str(self.currentDefence)
         print 'C HP       = ' + str(self.currentHP)
-    def printInfoLine(self):
+    def printInfoLine(self): # single line printing
          stdout.write('ID: ' + str(self.enemyId) + ' Type:' + str(self.enemyType) + ' HP:' + str(self.currentHP) + ' STATUS: ' + self.status + ' MP: ' + str(self.currentMP) + '\n')
 
+# class for the enemy team
 class Enemies:
-    frontRow = []
-    backRow = []
-    state = None
-    def __init__(self,fr,br,st):
+    frontRow = [] # frront rrow
+    backRow = [] # back row
+    state = None # get state from FSM
+    def __init__(self,fr,br,st): # init
         self.frontRow = fr
         self.backRow = br
         self.state = st
 
-    def updateEnemey(self,enemy):
+    # this funtion updates an enemy
+    def updateEnemey(self,enemy): 
         if enemy.row == 1:
             for i in range(len(self.frontRow)):
                 if self.frontRow[i] == enemy.enemyId:
@@ -123,6 +125,7 @@ class Enemies:
                 if self.backRow[i] == enemy.enemyId:
                     self.backRow[i] = enemy
 
+    # this funtion chekcs to see if an id is valid
     def validId(self,mId):
         for x in self.frontRow:
             if x.enemyId == mId:
@@ -132,6 +135,7 @@ class Enemies:
                 return True
         return False
 
+    # this funtion returns an enemy
     def getEnemey(self,mId):
         for x in self.frontRow:
             if x.enemyId == mId:
@@ -140,6 +144,7 @@ class Enemies:
             if x.enemyId == mId:
                 return x
 
+    # Pretty Prrinting!!!!
     def printEnemies(self):
         print 'ENEMY STATE: ' + self.state.currentState
         print '-------------FRONT ROW--------------'
@@ -150,10 +155,12 @@ class Enemies:
         for x in self.backRow: 
             x.printInfoLine()
 
+    # this function uses HOFC to remove dead enemies
     def removeDeadEnemeies(self):
         self.frontRow = filter(lambda x: x.currentHP > 0, self.frontRow)
         self.backRow = filter(lambda x: x.currentHP > 0, self.backRow)
 
+    # this funtion resets all enemies (removing buffs like AttackBuff orr Defence buff)
     def resetEnemies(self):
         for x in self.frontRow:
             x.currentDefence = x.defence
@@ -166,6 +173,12 @@ class Enemies:
                     x.currentMP = x.magicPoints
                 else:
                     x.currentMP = x.currentMP + MPTURN
-
+                    
+    # this funtion rreturns all enemies
     def getAllEnemies(self):
         return self.frontRow+self.backRow
+
+if __name__ == "__main__": # cannot call directly
+    print 'This file, ' + argv[0] + ', is only for import....'
+    print 'to Play the game please run main.py:'
+    print 'usage: python main.py'
