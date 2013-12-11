@@ -33,15 +33,19 @@ def saveGame(allEnemies,thePlayer): # save the game
 
 # this function load a game and returns the allEnemies and thePlayer entities
 def loadGame(): # load a game
-    enemiesfh = open('enemies','r') # open files
-    playerfh = open('player','r')
-    enemyData = enemiesfh.read() # read files
-    playerData = playerfh.read()
-    allEnemies = pickle.loads(enemyData) # load pickle data for enemies
-    thePlayer = pickle.loads(playerData) # load pickle data for player
-    enemiesfh.close()
-    playerfh.close()
-    return [allEnemies,thePlayer] # return data
+	try:
+	    enemiesfh = open('enemies','r') # open files
+	    playerfh = open('player','r')
+	    enemyData = enemiesfh.read() # read files
+	    playerData = playerfh.read()
+	    allEnemies = pickle.loads(enemyData) # load pickle data for enemies
+	    thePlayer = pickle.loads(playerData) # load pickle data for player
+	    enemiesfh.close()
+	    playerfh.close()
+	    return [allEnemies,thePlayer] # return data
+	except IOError:
+		print 'failed to load! D:'
+		sys.exit(0)
 
 # this function removes all buffs from the player
 def resetPlayer(thePlayer): # remove player defend buff
