@@ -1,22 +1,21 @@
-import sys,time,functions,getpass
+import sys,time,functions,getpass # Imports
 from random import randint
 from config import *
 from player import Player
 from enemies import *
 from states import States
 
-playerClasses = ['Fighter', 'Thief']
-enemyClasses = ['HOF','LOF','DEW','DEC','DEA']
-frontRowPossibilities = ['HOF','LOF']
-backRowPossibilities = ['DEW','DEC','DEA']
-commandPossibilities = ['Attack','Defend', 'Exit']
+playerClasses = ['Fighter', 'Thief'] # possible player classes
+enemyClasses = ['HOF','LOF','DEW','DEC','DEA'] # possible enemy classes (no used)
+frontRowPossibilities = ['HOF','LOF'] # possible front row enemy classes 
+backRowPossibilities = ['DEW','DEC','DEA'] # possible back row enemy classes 
+commandPossibilities = ['Attack','Defend', 'Exit'] # player actions
 
 functions.clearScreen()
 print 'Welcome to AI Battle!'
 print '------------------------------------------'
 print 'Please pick your player class! (pick number NOT name)'
-while True:
-
+while True: # used to pick player classes
     for i in range(len(playerClasses)):
         print '[' + str(i)+ ']:' + ' ' + playerClasses[i]
     try:
@@ -25,21 +24,21 @@ while True:
             break
         else:
             raise ValueError
-    except ValueError:
+    except ValueError: # incorrect input
         print 'Incorrect Choice! Please Try again!'
 
 thePlayer = Player(playerClasses[playerClassChoice])
 thePlayer.printInfo()
 
 print 'How many enemies do you want to fight?'
-while True:
+while True: # used to pick numbers of enemies
     try:
         enemyCount = int(raw_input('>'))
         break
     except ValueError:
         continue
 
-frontRowCount = (enemyCount / 2) + 1
+frontRowCount = (enemyCount / 2) + 1 # there is always more front row enemies than back row enemies
 backRowCount = enemyCount - frontRowCount
 functions.endofLine()
 
@@ -48,28 +47,29 @@ functions.endofLine()
 frontRow = []
 backRow = []
 
-for i in range(frontRowCount):
+for i in range(frontRowCount): # randomly pick front row enemies
     tempEnemyIndex = randint(0,len(frontRowPossibilities)-1)
     frontRow.append(Enemy(frontRowPossibilities[tempEnemyIndex],i))
-for i in range(backRowCount):
+for i in range(backRowCount): # randomly pick back row enemies
     tempEnemyIndex = randint(0,len(backRowPossibilities)-1)
     backRow.append(Enemy(backRowPossibilities[tempEnemyIndex],i+len(frontRow)))
 
-initState = States('Attack!')
-allEnemies = Enemies(frontRow,backRow,initState)
+initState = States('Attack!') # initialize enemey FSM
+allEnemies = Enemies(frontRow,backRow,initState) # create enemy team object
 
 sys.stdout.write('Starting Game!')
 functions.endofLine()
 command = ''
 functions.endofLine()
 while command.lower() not in exitStrings:
-    if len(allEnemies.getAllEnemies()) <= 0:
+    if len(allEnemies.getAllEnemies()) <= 0: # winning condition
         print 'YOU WIN!'
         break;
-    elif thePlayer.currentHP <= 0:
+    elif thePlayer.currentHP <= 0: # losing condition
         print 'YOU LOST!'
         break;
-    wait = getpass.getpass('press enter key to continue...')
+    wait = getpass.getpass('press enter key to continue...') # pauses game
+    functions.clearScreen()
     thePlayer = functions.resetPlayer(thePlayer)
     functions.endofLine()
     allEnemies.printEnemies()
