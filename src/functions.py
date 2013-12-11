@@ -38,7 +38,8 @@ def Attack(attacker,defender,allEnemies,playerAttack):
 	if playerAttack:
 		doubleAttack = randint(1,100) <= attacker.doubleSwing
 		dodge = randint(1,100) <= defender.dodge
-		if dodge:
+		hit = randint(1,100) <= attacker.hit
+		if dodge or not hit:
 			print 'You attacked ' + defender.enemyType + ' and Missed!!'
 		else:
 			enemyAfterAttack,dmgDone = AttackEnemy(attacker,defender)
@@ -60,7 +61,8 @@ def Attack(attacker,defender,allEnemies,playerAttack):
 		playerAfterAttack = defender
 		doubleAttack = randint(1,100) <= attacker.doubleSwing
 		dodge = randint(1,100) <= defender.dodge
-		if dodge:
+		hit = randint(1,100) <= attacker.hit
+		if dodge or not hit:
 			print attacker.enemyType + ' attacked You and Missed!!'
 		else:
 			playerAfterAttack,dmgDone = AttackEnemy(attacker,defender)
@@ -127,17 +129,6 @@ def Buff(source,target):
 
 def enemyTurn(thePlayer,allEnemies):
 	allEnemies.state.updateState(allEnemies)
-	for x in allEnemies.frontRow:
-		frontRowTree = trees.OrcFighterTree(x,thePlayer,allEnemies.state.currentState)
-		mAction = frontRowTree.action
-		if mAction == 'Attack':
-			thePlayer,allEnemies = Attack(x,thePlayer,allEnemies,False)
-			x.status = 'Attacking'
-			allEnemies.updateEnemey(x)
-		elif mAction == 'Defend':
-			x.status = 'Defending'
-			x = Defend(x,False)
-			allEnemies.updateEnemey(x)
 	for x in allEnemies.backRow:
 		backRowTree = None
 		if x.enemyType == 'Dark Elf Archer':
@@ -187,6 +178,18 @@ def enemyTurn(thePlayer,allEnemies):
 				x,target = Buff(x,mTarget)
 				allEnemies.updateEnemey(x)
 				allEnemies.updateEnemey(target)
+	for x in allEnemies.frontRow:
+		frontRowTree = trees.OrcFighterTree(x,thePlayer,allEnemies.state.currentState)
+		mAction = frontRowTree.action
+		if mAction == 'Attack':
+			thePlayer,allEnemies = Attack(x,thePlayer,allEnemies,False)
+			x.status = 'Attacking'
+			allEnemies.updateEnemey(x)
+		elif mAction == 'Defend':
+			x.status = 'Defending'
+			x = Defend(x,False)
+			allEnemies.updateEnemey(x)
+	
 
 
 	return [thePlayer,allEnemies]	

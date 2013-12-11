@@ -8,10 +8,13 @@ def getWorstHurt(allEnemies):
 	worstHurt = None
 	minHP = 100000000000.0
 	for x in allEnemies.getAllEnemies():
-		if x.currentHP / x.hitPoints < minHP:
+		if float(x.currentHP) / x.hitPoints < minHP:
 			minHP = x.currentHP / x.hitPoints
 			worstHurt = x
-	return worstHurt
+	if minHP == 1.0:
+		return None
+	else:
+		return worstHurt
 
 def BuffAlly(allEnemies):
 	for x in allEnemies.getAllEnemies():
@@ -48,10 +51,13 @@ class ClericTree:
 		elif enemyTeamState == 'Attack!':
 			if cleric.currentMP >= HEALCOST:
 				worstHurt = getWorstHurt(allEnemies)
-				if worstHurt.enemyId == cleric.enemyId:
-					self.action = ['Defend',None]
+				if worstHurt == None:
+					self.action = ['Attack',None]
 				else:
-					self.action = ['Heal', worstHurt]
+					if worstHurt.enemyId == cleric.enemyId:
+						self.action = ['Defend',None]
+					else:
+						self.action = ['Heal', worstHurt]
 			else:
 				if cleric.currentHP < (0.70 * cleric.hitPoints):
 					self.action = ['Defend',None]
